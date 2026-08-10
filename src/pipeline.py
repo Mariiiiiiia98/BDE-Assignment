@@ -33,3 +33,22 @@ def evaluate_channel_health(df: DataFrame) -> DataFrame:
          .when(is_unhealthy, "UNHEALTHY")
          .otherwise("HEALTHY")
     )
+def calculate_device_hour_health(df: DataFrame) -> DataFrame:
+    """Aggregates channel health per device per hour."""
+    df_with_hour = df.withColumn(
+        "measurement_hour",
+        F.date_trunc("hour", F.to_timestamp("start_time_cet"))
+    )
+
+    grouped = df_with_hour.groupBy("data_mac", "measurement_hour").agg(
+        F.sum(F.when(F.col("channel_status") == "UNHEALTHY", 1).otherwise(0)).alias("unhealthy_count"),
+        F.sum(F.when(F.col("channel_status") == "HEALTHY", 1).otherwise(0)).alias("healthy_count")
+    )
+
+    return grouped.withColumn(
+        "device_hour_status",
+        F.when(F.col("unhealthy_count") > 0, "UNHEALTHY")
+         .when((F.col("healthy_count") > 0) & (F.col("unhealthy_count") == 0), "HEALTHY")
+         .otherwise("UNKNOWN")
+    ).select("data_mac", "measurement_hour", "device_hour_status")
+
