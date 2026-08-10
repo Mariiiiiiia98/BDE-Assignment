@@ -52,3 +52,18 @@ def calculate_device_hour_health(df: DataFrame) -> DataFrame:
          .otherwise("UNKNOWN")
     ).select("data_mac", "measurement_hour", "device_hour_status")
 
+def calculate_device_health(df_device_hour: DataFrame) -> DataFrame:
+    """Aggregates hourly health status into overall device health."""
+    grouped = df_device_hour.groupBy("data_mac").agg(
+        F.sum(F.when(F.col("device_hour_status") == "UNHEALTHY", 1).otherwise(0)).alias("unhealthy_hours"),
+        F.sum(F.when(F.col("device_hour_status") == "HEALTHY", 1).otherwise(0)).alias("healthy_hours"),
+        F.sum(F.when(F.col("device_hour_status") == "UNKNOWN", 1).otherwise(0)).alias("unknown_hours"),
+        F.count("device_hour_status").alias("total_hours")
+    )
+
+    return grouped.withColumn(
+        "device_status",
+        F.when(F.col("unhealthy_hours") > 0, "UNHEALTHY")
+         .when(F.col("healthy_hours") == F.col("total_hours"), "HEALTHY")
+         .otherwise("UNKNOWN")
+    ).select("data_mac", "device_status")
