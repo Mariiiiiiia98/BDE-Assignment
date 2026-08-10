@@ -10,3 +10,26 @@ def classify_channel_type(df: DataFrame) -> DataFrame:
          .when(F.col("data_ds_freq") < 1000000000, "SC-QAM")
          .otherwise("OFDM")
     )
+
+def evaluate_channel_health(df: DataFrame) -> DataFrame:
+    """Evaluates channel health status for SC-QAM channels."""
+    is_unhealthy = (
+        (F.col("data_ds_snr") < 31.0) |
+        (F.col("data_ds_rxp") < -8.0) |
+        (F.col("data_ds_rxp") > 15.0) |
+        (F.col("data_ds_corr_rate") >= 0.25)
+    )
+
+    is_missing = (
+        F.col("data_ds_snr").isNull() |
+        F.col("data_ds_rxp").isNull() |
+        F.col("data_ds_corr_rate").isNull()
+    )
+
+    return df.withColumn(
+        "channel_status",
+        F.when(F.col("channel_type") != "SC-QAM", "UNKNOWN")
+         .when(is_missing, "UNKNOWN")
+         .when(is_unhealthy, "UNHEALTHY")
+         .otherwise("HEALTHY")
+    )
