@@ -1,0 +1,8 @@
+serial_number,category,docsis,parameter,unit,symbol,value_str,change_reason
+23,Downstream channels,SC-QAM,Rx Power,dBmV,>,15,aligned specs
+24,Downstream channels,SC-QAM,CER,%,>=,0.25,Initial value
+25,Downstream channels,SC-QAM,Delta CER,%,>=,1,Initial Value
+26,Downstream channels,SC-QAM,SNR,dB,<,31,using critical threshold
+27,Downstream channels,SC-QAM,Rx Power,dBmV,<,-8,Aligned Specs
+28,Downstream channels,SC-QAM,Delta SNR,dB,>=,2,Initial Value
+29,Downstream channels,SC-QAM,Delta Rx Power,dBmV,>=,2,Initial Value
