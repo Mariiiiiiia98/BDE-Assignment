@@ -4,6 +4,7 @@ from src.pipeline import (
     classify_channel_type,
     evaluate_channel_health,
     calculate_device_hour_health,
+    calculate_device_health
 )
 
 @pytest.fixture(scope="session")
@@ -49,8 +50,6 @@ def test_device_hour_health(spark):
 
 def test_device_health(spark):
     #Device overall health
-    from src.pipeline import aggregate_device_health
-
     # Mock hourly health data
     data = [
         # Device 1: Has one UNHEALTHY hour -> overall UNHEALTHY
@@ -69,7 +68,7 @@ def test_device_health(spark):
     schema = ["data_mac", "measurement_hour", "device_hour_status"]
     df_input = spark.createDataFrame(data, schema)
 
-    df_result = aggregate_device_health(df_input)
+    df_result = calculate_device_health(df_input)
     results = {row["data_mac"]: row["device_status"] for row in df_result.collect()}
 
     assert results["MAC_01"] == "UNHEALTHY"
