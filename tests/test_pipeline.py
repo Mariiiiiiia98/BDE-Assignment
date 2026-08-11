@@ -17,3 +17,4 @@ def test_channel_type(spark):
     result = classify_channel_type(df)
     types = [row.channel_type for row in result.collect()]
     assert types == ["SC-QAM", "OFDM", "UNKNOWN"]
+
