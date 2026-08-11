@@ -32,3 +32,18 @@ def test_channel_health(spark):
     statuses = [row.channel_status for row in result.collect()]
     assert statuses == ["UNHEALTHY", "HEALTHY", "UNHEALTHY", "UNHEALTHY", "UNKNOWN"]
 
+def test_device_hour_health(spark):
+    # Test device-hour aggregation rules
+    data = [
+        ("mac_001", "2026-08-11 10:00:00", "HEALTHY"),
+        ("mac_001", "2026-08-11 10:00:00", "HEALTHY"), # All healthy -> HEALTHY
+        ("mac_002", "2026-08-11 10:00:00", "HEALTHY"),
+        ("mac_002", "2026-08-11 10:00:00", "UNHEALTHY"), # One unhealthy -> UNHEALTHY
+    ]
+    df = spark.createDataFrame(data, ["data_mac", "start_time_cet", "channel_status"])
+    result = calculate_device_hour_health(df)
+    status_dict = {row.data_mac: row.device_hour_status for row in result.collect()}
+    
+    assert status_dict["mac_001"] == "HEALTHY"
+    assert status_dict["mac_002"] == "UNHEALTHY"
+
