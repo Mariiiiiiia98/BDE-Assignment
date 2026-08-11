@@ -1,0 +1,38 @@
+[33mcommit d9e81fce832d2a3e0499ab1b00e713a7e9dd5a41[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Mariiiiiiia98 <mary.balahonova05@gmail.com>
+Date:   Mon Aug 10 19:22:16 2026 +0000
+
+    Evaluating health status
+
+[1mdiff --git a/src/pipeline.py b/src/pipeline.py[m
+[1mindex 6cf64dc..d0c32e9 100644[m
+[1m--- a/src/pipeline.py[m
+[1m+++ b/src/pipeline.py[m
+[36m@@ -10,3 +10,26 @@[m [mdef classify_channel_type(df: DataFrame) -> DataFrame:[m
+          .when(F.col("data_ds_freq") < 1000000000, "SC-QAM")[m
+          .otherwise("OFDM")[m
+     )[m
+[32m+[m
+[32m+[m[32mdef evaluate_channel_health(df: DataFrame) -> DataFrame:[m
+[32m+[m[32m    """Evaluates channel health status for SC-QAM channels."""[m
+[32m+[m[32m    is_unhealthy = ([m
+[32m+[m[32m        (F.col("data_ds_snr") < 31.0) |[m
+[32m+[m[32m        (F.col("data_ds_rxp") < -8.0) |[m
+[32m+[m[32m        (F.col("data_ds_rxp") > 15.0) |[m
+[32m+[m[32m        (F.col("data_ds_corr_rate") >= 0.25)[m
+[32m+[m[32m    )[m
+[32m+[m
+[32m+[m[32m    is_missing = ([m
+[32m+[m[32m        F.col("data_ds_snr").isNull() |[m
+[32m+[m[32m        F.col("data_ds_rxp").isNull() |[m
+[32m+[m[32m        F.col("data_ds_corr_rate").isNull()[m
+[32m+[m[32m    )[m
+[32m+[m
+[32m+[m[32m    return df.withColumn([m
+[32m+[m[32m        "channel_status",[m
+[32m+[m[32m        F.when(F.col("channel_type") != "SC-QAM", "UNKNOWN")[m
+[32m+[m[32m         .when(is_missing, "UNKNOWN")[m
+[32m+[m[32m         .when(is_unhealthy, "UNHEALTHY")[m
+[32m+[m[32m         .otherwise("HEALTHY")[m
+[32m+[m[32m    )[m
+\ No newline at end of file[m
