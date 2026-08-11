@@ -46,3 +46,32 @@ def test_device_hour_health(spark):
     
     assert status_dict["mac_001"] == "HEALTHY"
     assert status_dict["mac_002"] == "UNHEALTHY"
+
+def test_device_health(spark):
+    #Device overall health
+    from src.pipeline import aggregate_device_health
+
+    # Mock hourly health data
+    data = [
+        # Device 1: Has one UNHEALTHY hour -> overall UNHEALTHY
+        ("MAC_01", "2026-01-20 00:00:00", "HEALTHY"),
+        ("MAC_01", "2026-01-20 01:00:00", "UNHEALTHY"),
+        
+        # Device 2: All hours HEALTHY -> overall HEALTHY
+        ("MAC_02", "2026-01-20 00:00:00", "HEALTHY"),
+        ("MAC_02", "2026-01-20 01:00:00", "HEALTHY"),
+        
+        # Device 3: All hours UNKNOWN -> overall UNKNOWN
+        ("MAC_03", "2026-01-20 00:00:00", "UNKNOWN"),
+        ("MAC_03", "2026-01-20 01:00:00", "UNKNOWN"),
+    ]
+
+    schema = ["data_mac", "measurement_hour", "device_hour_status"]
+    df_input = spark.createDataFrame(data, schema)
+
+    df_result = aggregate_device_health(df_input)
+    results = {row["data_mac"]: row["device_status"] for row in df_result.collect()}
+
+    assert results["MAC_01"] == "UNHEALTHY"
+    assert results["MAC_02"] == "HEALTHY"
+    assert results["MAC_03"] == "UNKNOWN"
