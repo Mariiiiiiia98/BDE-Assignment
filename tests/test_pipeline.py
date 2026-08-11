@@ -46,4 +46,3 @@ def test_device_hour_health(spark):
     
     assert status_dict["mac_001"] == "HEALTHY"
     assert status_dict["mac_002"] == "UNHEALTHY"
-
