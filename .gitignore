@@ -2,3 +2,8 @@ __pycache__/
 .pytest_cache/
 output/
 *.pyc
+
+# Specifically include these required output folders
+!output/channel_health/
+!output/device_hour_health/
+!output/device_health/
