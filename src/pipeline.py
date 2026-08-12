@@ -3,7 +3,7 @@ import pyspark.sql.functions as F
 
 
 def classify_channel_type(df: DataFrame) -> DataFrame:
-    """Classifies channels based on frequency."""
+    """Classifies channels based on frequency"""
     return df.withColumn(
         "channel_type",
         F.when(F.col("data_ds_freq").isNull(), "UNKNOWN")
@@ -12,7 +12,7 @@ def classify_channel_type(df: DataFrame) -> DataFrame:
     )
 
 def evaluate_channel_health(df: DataFrame) -> DataFrame:
-    """Evaluates channel health status for SC-QAM channels."""
+    """Evaluates channel health status for SC-QAM channels"""
     is_unhealthy = (
         (F.col("data_ds_snr") < 31.0) |
         (F.col("data_ds_rxp") < -8.0) |
@@ -34,7 +34,7 @@ def evaluate_channel_health(df: DataFrame) -> DataFrame:
          .otherwise("HEALTHY")
     )
 def calculate_device_hour_health(df: DataFrame) -> DataFrame:
-    """Aggregates channel health per device per hour."""
+    """Aggregates channel health per device per hour"""
     df_with_hour = df.withColumn(
         "measurement_hour",
         F.date_trunc("hour", F.to_timestamp("start_time_cet"))
@@ -53,7 +53,7 @@ def calculate_device_hour_health(df: DataFrame) -> DataFrame:
     ).select("data_mac", "measurement_hour", "device_hour_status")
 
 def calculate_device_health(df_device_hour: DataFrame) -> DataFrame:
-    """Aggregates hourly health status into overall device health."""
+    """Aggregates hourly health status into overall device health"""
     grouped = df_device_hour.groupBy("data_mac").agg(
         F.sum(F.when(F.col("device_hour_status") == "UNHEALTHY", 1).otherwise(0)).alias("unhealthy_hours"),
         F.sum(F.when(F.col("device_hour_status") == "HEALTHY", 1).otherwise(0)).alias("healthy_hours"),
