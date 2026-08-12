@@ -8,7 +8,7 @@ from src.pipeline import (
     calculate_device_health,
 )
 
-
+# Main execution function for the data pipeline
 def main(input_path: str, output_dir: str):
     # Initialize Spark Session
     spark = SparkSession.builder \
