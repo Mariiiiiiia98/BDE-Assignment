@@ -4,7 +4,7 @@ A PySpark data processing pipeline designed to ingest raw broadband cable modem 
 Project Structure
 
 ├── data/
-    └── downstream_csq_spec.csv  # Business logic specification
+│   ├── downstream_csq_spec.csv  # Business logic specification
 │   └── ds_processed.csv         # Raw input telemetry dataset
 ├── output/
 │   ├── channel_health/          # Output 1: Evaluated channel-level metrics
@@ -14,16 +14,16 @@ Project Structure
 │   ├── main.py                  # Main PySpark processing pipeline entry point
 │   └── pipeline.py              # Core transformation and health logic
 ├── tests/
-│   └── test_pipeline.py          # Unit tests using pytest
+│   └── test_pipeline.py         # Unit tests using pytest
 ├── .gitignore
-├── README.md                     # Python dependencies
-└── requirements.txt              # Project documentation
+├── README.md                    # Project documentation
+└── requirements.txt             # Python dependencies
 
 1. Prerequisites
 pip install -r requirements.txt
 
 2.How to run a pipeline:
-python -m src.main --input-path data/ds_processed.csv --output-path output/
+python -m src.main --input-path data/ds_processed.csv --output-dir output/
 
 3. This will create three Parquet datasets inside the output/ directory:
 output/channel_health/
