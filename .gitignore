@@ -3,7 +3,10 @@ __pycache__/
 output/
 *.pyc
 
-# Specifically include these required output folders
+# 1. Ignore EVERYTHING inside the output directory by default
+output/*
+
+# 2. But create exceptions for the SPECIFIC required folders
 !output/channel_health/
 !output/device_hour_health/
 !output/device_health/
