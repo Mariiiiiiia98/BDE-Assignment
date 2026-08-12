@@ -1,8 +1,10 @@
 # BDE-Assignment
+
 A PySpark data processing pipeline designed to ingest raw broadband cable modem telemetry data and evaluate network health across three levels: channel level, device-hour aggregate level, and overall device fleet level.
 
-Project Structure
+## Project Structure
 
+```text
 ├── data/
 │   ├── downstream_csq_spec.csv  # Business logic specification
 │   └── ds_processed.csv         # Raw input telemetry dataset
@@ -19,16 +21,16 @@ Project Structure
 ├── README.md                    # Project documentation
 └── requirements.txt             # Python dependencies
 
-1. Prerequisites
-pip install -r requirements.txt
+1. Prerequisites:
+   pip install -r requirements.txt
 
-2.How to run a pipeline:
-python -m src.main --input-path data/ds_processed.csv --output-dir output/
+2. How to run the pipeline:
+   python -m src.main --input-path data/ds_processed.csv --output-dir output/
 
-3. This will create three Parquet datasets inside the output/ directory:
-output/channel_health/
-output/device_hour_health/
-output/device_health/
+3. Generated outputs inside the output/ directory:
+   - output/channel_health/
+   - output/device_hour_health/
+   - output/device_health/
 
 4. How to run tests:
-pytest -q
+   pytest -q
